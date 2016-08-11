@@ -23,6 +23,8 @@
       "imports": "dnxcore50"
     },
     "net46": {
+    },
+    "net451": {
     }
   }
 }
