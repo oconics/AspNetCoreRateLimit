@@ -1,14 +1,24 @@
-version: '{build}'
-pull_requests:
-  do_not_increment_build_number: true
-branches:
-  only:
-  - master
-nuget:
-  disable_publish_on_pr: true
-build_script:
-- ps: .\Build.ps1
+image: Visual Studio 2015
+version: "1.0.0-development-{build}"
+configuration:
+  - Release
+
+init:
+  - git config --global core.autocrlf input
+
 test: off
+
+before_build:
+  - ps: .\Set-PackageLabel.ps1
+  - dotnet restore -v minimal
+
+build:
+  project: AspNetCoreRateLimit.sln
+  parallel: true
+  verbosity: minimal
+
+after_build:
+  - dotnet pack -c %CONFIGURATION% --no-build --version-suffix %LABEL% -o artifacts .\src\AspNetCoreRateLimit\project.json
+
 artifacts:
-- path: .\artifacts\**\*.nupkg
-  name: NuGet
+  - path: artifacts\*.nupkg
